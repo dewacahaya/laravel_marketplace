@@ -68,6 +68,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/dashboard', [VendorDashboardController::class, 'index'])->name('dashboard');
         Route::resource('products', VendorProductController::class);
         Route::resource('orders', VendorOrderController::class);
+        Route::patch('orders/{orderId}/status', [VendorOrderController::class, 'updateStatus'])->name('orders.updateStatus');
     });
 
     // CUSTOMER

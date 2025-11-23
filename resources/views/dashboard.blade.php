@@ -32,7 +32,7 @@
                         class="block py-2 px-3 dark:text-white rounded hover:bg-indigo-100 dark:hover:bg-indigo-800 {{ request()->routeIs('dashboard') ? 'bg-indigo-50 dark:bg-indigo-900 font-semibold' : '' }}">🏠 Dashboard</a>
                     <a href="{{ route('vendor.products.index') }}" class="block py-2 px-3 dark:text-white rounded hover:bg-indigo-100 dark:hover:bg-indigo-800 {{ request()->routeIs('vendor.products') ? 'bg-indigo-50 dark:bg-indigo-900 font-semibold' : '' }}">🛒 My
                         Products</a>
-                    <a href="#" class="block py-2 px-3 dark:text-white rounded hover:bg-indigo-100 dark:hover:bg-indigo-800 {{ request()->routeIs('vendor.orders') ? 'bg-indigo-50 dark:bg-indigo-900 font-semibold' : '' }}">📦 My
+                    <a href="{{ route('vendor.orders.index') }}" class="block py-2 px-3 dark:text-white rounded hover:bg-indigo-100 dark:hover:bg-indigo-800 {{ request()->routeIs('vendor.orders') ? 'bg-indigo-50 dark:bg-indigo-900 font-semibold' : '' }}">📦 My
                         Orders</a>
                 @else
                     <a href="{{ route('customer.dashboard') }}"
