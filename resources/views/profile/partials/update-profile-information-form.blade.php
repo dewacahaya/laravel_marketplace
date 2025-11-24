@@ -56,22 +56,69 @@
             {{ __('Contact Information') }}
         </h3>
 
-        {{-- Data CUSTOMER_PROFILES (Phone) --}}
-        <div>
-            <x-input-label for="phone" :value="__('Phone Number')" />
-            <x-text-input id="phone" name="phone" type="text" class="mt-1 block w-full" :value="old('phone', $user->customerProfile->phone ?? '')"
-                required autocomplete="tel" />
-            <x-input-error class="mt-2" :messages="$errors->get('phone')" />
-        </div>
+        @if ($user->role === 'customer')
+            {{-- CUSTOMER FIELDS --}}
+            @php $profile = $user->customerProfile; @endphp
 
-        {{-- Data CUSTOMER_PROFILES (Address) --}}
-        <div>
-            <x-input-label for="address" :value="__('Address')" />
-            <textarea id="address" name="address" rows="3"
-                class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm"
-                required>{{ old('address', $user->customerProfile->address ?? '') }}</textarea>
-            <x-input-error class="mt-2" :messages="$errors->get('address')" />
-        </div>
+            {{-- Phone --}}
+            <div>
+                <x-input-label for="phone" :value="__('Nomor Telepon')" />
+                <x-text-input
+                    id="phone"
+                    name="phone"
+                    type="text"
+                    class="mt-1 block w-full"
+                    :value="old('phone', $profile->phone ?? '')"
+                    required
+                    autocomplete="tel"
+                />
+                <x-input-error class="mt-2" :messages="$errors->get('phone')" />
+            </div>
+
+            {{-- Address --}}
+            <div>
+                <x-input-label for="address" :value="__('Alamat Pengiriman Default')" />
+                <textarea
+                    id="address"
+                    name="address"
+                    rows="3"
+                    class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm"
+                    required
+                >{{ old('address', $profile->address ?? '') }}</textarea>
+                <x-input-error class="mt-2" :messages="$errors->get('address')" />
+            </div>
+
+        @elseif ($user->role === 'vendor')
+            {{-- VENDOR FIELDS --}}
+            @php $profile = $user->vendorProfile; @endphp
+
+            {{-- Store Name --}}
+            <div>
+                <x-input-label for="store_name" :value="__('Nama Toko')" />
+                <x-text-input
+                    id="store_name"
+                    name="store_name"
+                    type="text"
+                    class="mt-1 block w-full"
+                    :value="old('store_name', $profile->store_name ?? '')"
+                    required
+                />
+                <x-input-error class="mt-2" :messages="$errors->get('store_name')" />
+            </div>
+
+            {{-- Address --}}
+            <div>
+                <x-input-label for="address" :value="__('Alamat Toko (Lokasi Pengiriman)')" />
+                <textarea
+                    id="address"
+                    name="address"
+                    rows="3"
+                    class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm"
+                    required
+                >{{ old('address', $profile->address ?? '') }}</textarea>
+                <x-input-error class="mt-2" :messages="$errors->get('address')" />
+            </div>
+        @endif
 
 
         <div class="flex items-center gap-4">

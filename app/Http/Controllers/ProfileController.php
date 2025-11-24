@@ -16,7 +16,15 @@ class ProfileController extends Controller
      */
     public function edit(Request $request): View
     {
-        $user = $request->user()->load('customerProfile');
+        $user = $request->user();
+
+        // Memuat relasi yang sesuai berdasarkan peran (role)
+        if ($user->role === 'vendor') {
+            $user->load('vendorProfile');
+        } else {
+            $user->load('customerProfile');
+        }
+
         return view('profile.edit', [
             'user' => $user,
         ]);
@@ -30,22 +38,29 @@ class ProfileController extends Controller
         $user = $request->user();
         $validatedData = $request->validated();
 
+        // 1. SIMPAN DATA USER (Name & Email)
         $userData = $request->only(['name', 'email']);
-
-        $profileData = $request->only(['phone', 'address']);
-
         $user->fill($userData);
 
         if ($user->isDirty('email')) {
             $user->email_verified_at = null;
         }
-
         $user->save();
 
-        $user->customerProfile()->updateOrCreate(
-            ['user_id' => $user->id],
-            $profileData
-        );
+        // 2. SIMPAN DATA PROFIL KHUSUS BERDASARKAN ROLE
+        if ($user->role === 'customer') {
+            $profileData = $request->only(['phone', 'address']);
+            $user->customerProfile()->updateOrCreate(
+                ['user_id' => $user->id],
+                $profileData
+            );
+        } elseif ($user->role === 'vendor') {
+            $profileData = $request->only(['store_name', 'address']);
+            $user->vendorProfile()->updateOrCreate(
+                ['user_id' => $user->id],
+                $profileData
+            );
+        }
 
         return Redirect::route('profile.edit')->with('status', 'profile-updated');
     }

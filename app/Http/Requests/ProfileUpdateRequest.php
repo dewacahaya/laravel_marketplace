@@ -15,12 +15,24 @@ class ProfileUpdateRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
+        $rules = [
+            // RULES UNTUK MODEL USER
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', Rule::unique(User::class)->ignore($this->user()->id)],
-
-            'phone' => ['required', 'string', 'max:30'],
-            'address' => ['required', 'string', 'max:1000'],
         ];
+
+        // RULES KHUSUS UNTUK CUSTOMER
+        if ($this->user()->role === 'customer') {
+            $rules['phone'] = ['required', 'string', 'max:30'];
+            $rules['address'] = ['required', 'string', 'max:1000'];
+        }
+
+        // RULES KHUSUS UNTUK VENDOR
+        if ($this->user()->role === 'vendor') {
+            $rules['store_name'] = ['required', 'string', 'max:255'];
+            $rules['address'] = ['required', 'string', 'max:1000']; // Alamat vendor
+        }
+
+        return $rules;
     }
 }
