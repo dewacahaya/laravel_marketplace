@@ -13,7 +13,6 @@ class OrderController extends Controller
 
     public function __construct(OrderService $orderService)
     {
-        // Middleware sudah didefinisikan di routes/web.php group Vendor
         $this->orderService = $orderService;
     }
 
@@ -31,15 +30,11 @@ class OrderController extends Controller
      */
     public function show(int $orderId): View
     {
-        $order = $this->orderService->getOrderDetail($orderId);
-
-        if (!$order) {
-            // Jika pesanan tidak ditemukan atau vendor tidak memiliki produk di dalamnya
+        $data = $this->orderService->getOrderDetail($orderId);
+        if (!$data) {
             abort(404, 'Pesanan tidak ditemukan atau Anda tidak memiliki akses ke detail pesanan ini.');
         }
-
-        // Pastikan path view: resources/views/vendor/orders/show.blade.php
-        return view('vendor.orders.show', compact('order'));
+        return view('vendor.orders.show', $data);
     }
 
     public function updateStatus(Request $request, int $orderId)

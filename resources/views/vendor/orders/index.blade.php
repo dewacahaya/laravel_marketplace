@@ -3,28 +3,35 @@
 @section('vendor_content')
     <div class="container mx-auto px-4 py-8 md:py-12">
 
-        <h2 class="text-3xl font-extrabold text-gray-900 mb-6 border-b pb-2">🚚 Pesanan Masuk</h2>
+        <h2 class="text-3xl font-extrabold text-gray-900 mb-6 border-b pb-2 dark:text-white">Incoming Orders</h2>
 
         @if ($orders->isEmpty())
             <div class="text-center py-10 border border-dashed border-gray-300 rounded-lg bg-gray-50 mt-10">
-                <p class="text-xl text-gray-500">Belum ada pesanan yang berisi produk Anda. 😥</p>
+                <p class="text-xl text-gray-500">You don't have any incoming orders yet.</p>
             </div>
         @else
             <div class="bg-white shadow-xl rounded-lg overflow-hidden">
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
                         <tr>
-                            <th class="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order ID
+                            <th class="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Order ID
                             </th>
-                            <th class="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tgl. Pesan
+                            <th class="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Order Date
                             </th>
-                            <th class="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama
-                                Customer</th>
-                            <th class="p-4 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Total Item
-                                Anda</th>
-                            <th class="p-4 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Status
-                                Order</th>
-                            <th class="p-4 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
+                            <th class="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Customer Name
+                            </th>
+                            <th class="p-4 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Total Item
+                            </th>
+                            <th class="p-4 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Order Status
+                            </th>
+                            <th class="p-4 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Action
+                            </th>
                         </tr>
                     </thead>
 
@@ -71,5 +78,3 @@
         @endif
     </div>
 @endsection
-
-

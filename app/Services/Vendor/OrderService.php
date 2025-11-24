@@ -23,27 +23,22 @@ class OrderService
         $vendorProductIds = $this->getVendorProductIds();
 
         if (empty($vendorProductIds)) {
-            return new Collection(); // Return Collection kosong jika tidak ada produk
+            return new Collection();
         }
 
-        // 1. Ambil semua OrderItem yang terkait dengan produk Vendor.
         $vendorOrderItems = OrderItem::whereIn('product_id', $vendorProductIds)
             ->get();
 
-        // 2. Ambil semua Order ID unik dari item-item tersebut.
         $orderIds = $vendorOrderItems->pluck('order_id')->unique()->toArray();
 
         if (empty($orderIds)) {
             return new Collection();
         }
 
-        // 3. Muat objek Order lengkap, termasuk item-itemnya.
-        // Kita hanya memuat item yang relevan untuk vendor ini.
         $orders = Order::whereIn('id', $orderIds)
             ->with([
                 'user',
                 'items' => function ($query) use ($vendorProductIds) {
-                    // HANYA ambil item yang produknya milik vendor ini.
                     $query->whereIn('product_id', $vendorProductIds)
                         ->with('product');
                 }
@@ -54,7 +49,7 @@ class OrderService
         return $orders;
     }
 
-    public function getOrderDetail(int $orderId): ?Order
+    public function getOrderDetail(int $orderId): ?array
     {
         $vendorProductIds = $this->getVendorProductIds();
 
@@ -62,25 +57,38 @@ class OrderService
             return null;
         }
 
-        // 1. Cek apakah ada OrderItem yang relevan untuk Order ID ini.
         $hasRelevantItems = OrderItem::where('order_id', $orderId)
             ->whereIn('product_id', $vendorProductIds)
             ->exists();
 
         if (!$hasRelevantItems) {
-            return null; // Vendor tidak memiliki produk di pesanan ini.
+            return null;
         }
 
-        // 2. Muat Order dengan item yang relevan (dan user).
         $order = Order::with([
-            'user',
+            'user.customerProfile',
             'items' => function ($query) use ($vendorProductIds) {
                 $query->whereIn('product_id', $vendorProductIds)
                     ->with('product');
             }
         ])->find($orderId);
 
-        return $order;
+        if (!$order) {
+            return null;
+        }
+
+        $profile = $order->user->customerProfile;
+
+        $custProfile = [
+            'name' => $order->user->name ?? 'N/A',
+            'phone' => $profile->phone ?? 'N/A',
+            'address' => $profile->address ?? 'Alamat belum diatur',
+        ];
+
+        return [
+            'order' => $order,
+            'customerProfile' => $custProfile,
+        ];
     }
 
     public function updateOrderStatus(int $orderId, string $newStatus): bool
