@@ -88,6 +88,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/checkout/confirm', [CustomerOrderController::class, 'confirm'])->name('checkout.confirm');
         Route::post('/checkout/process', [CustomerOrderController::class, 'process'])->name('checkout.process');
         Route::get('/checkout/success/{order}', [CustomerOrderController::class, 'success'])->name('checkout.success');
+        Route::post('/orders/{orderId}/review', [CustomerOrderController::class, 'storeReview'])->name('orders.storeReview');
     });
 });
 
