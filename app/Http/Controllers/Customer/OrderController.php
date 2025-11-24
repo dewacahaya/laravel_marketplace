@@ -8,10 +8,8 @@ use Illuminate\Http\Request;
 use App\Services\Customer\OrderService;
 use App\Models\CustomerProfile;
 use App\Models\Order;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
-use Illuminate\View\View;
 
 class OrderController extends Controller
 {
@@ -32,8 +30,6 @@ class OrderController extends Controller
 
         $total = collect($cart)->sum('subtotal');
 
-        // Load customer's current profile if exists
-        // Catatan: Jika relasi customerProfile belum ada, ini akan error.
         $profile = Auth::user()->customerProfile;
 
         return view('customer.checkout.confirm', compact('cart', 'total', 'profile'));
@@ -48,35 +44,19 @@ class OrderController extends Controller
             'address' => 'required|string|max:1000',
         ]);
 
-        // 1. UPDATE DATA DI USERS (Nama)
         Auth::user()->update(['name' => $request->name]);
 
-        // 2. UPDATE/CREATE CUSTOMER PROFILE (Phone & Address)
+        $profileData = $request->only(['phone', 'address']);
         $profile = Auth::user()->customerProfile;
+
         if ($profile) {
-            $profile->update([
-                // 'user_id' tidak perlu di-update di sini
-                // 'name' tidak di customer_profiles, tapi di users
-                'phone' => $request->phone,
-                'address' => $request->address,
-            ]);
+            $profile->update($profileData);
         } else {
-            CustomerProfile::create([
-                'user_id' => Auth::id(),
-                'phone' => $request->phone,
-                'address' => $request->address,
-            ]);
+            CustomerProfile::create(array_merge(['user_id' => Auth::id()], $profileData));
         }
 
-        // 3. DELEGATE ORDER CREATION TO SERVICE
         try {
-            // KIRIM SEMUA DATA PENGIRIMAN KE SERVICE
-            $order = $this->service->createOrderFromSession([
-                'name' => $request->name,
-                'phone' => $request->phone,
-                'address' => $request->address,
-                // 'note' => $request->note, // jika ada
-            ]);
+            $order = $this->service->createOrderFromSession([]);
         } catch (\Throwable $e) {
             Log::error("Order creation failed: " . $e->getMessage());
             return back()->with('error', $e->getMessage());
@@ -108,9 +88,6 @@ class OrderController extends Controller
         }
     }
 
-    /**
-     * Menyimpan ulasan baru untuk produk dalam pesanan.
-     */
     public function storeReview(Request $request, int $orderId)
     {
         // Validasi input
@@ -123,7 +100,6 @@ class OrderController extends Controller
         $dataToStore = $request->only(['product_id', 'rating', 'comment']);
 
         try {
-            // Memanggil Service untuk menyimpan ulasan
             $this->service->storeReview($orderId, $dataToStore);
 
             return redirect()->back()->with('success', 'Ulasan berhasil dikirimkan! Terima kasih atas masukan Anda.');

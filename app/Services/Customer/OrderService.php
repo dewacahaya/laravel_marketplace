@@ -4,10 +4,9 @@ namespace App\Services\Customer;
 
 use App\Models\Order;
 use App\Models\Product;
-use App\Models\Review; // Import model Review
+use App\Models\Review;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
-use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Collection;
 
@@ -27,7 +26,6 @@ class OrderService
                 throw new \RuntimeException("Product #{$id} not found.");
             }
 
-            // price from product (single source of truth)
             $price = (float) $product->price;
             $qty = (int) $entry['quantity'];
 
@@ -52,10 +50,10 @@ class OrderService
                 'user_id' => Auth::id(),
                 'total_price' => $totalPrice,
                 'status' => 'pending',
-                // PASTIKAN KOLOM INI ADA DI SKEMA TABEL ORDERS ANDA
-                'name' => $customerData['name'] ?? Auth::user()->name,
-                'phone' => $customerData['phone'] ?? null,
-                'address' => $customerData['address'] ?? null,
+                // // PASTIKAN KOLOM INI ADA DI SKEMA TABEL ORDERS ANDA
+                // 'name' => $customerData['name'] ?? Auth::user()->name,
+                // 'phone' => $customerData['phone'] ?? null,
+                // 'address' => $customerData['address'] ?? null,
             ];
 
             $order = Order::create($orderCreationData);
@@ -84,7 +82,7 @@ class OrderService
         }
 
         return Order::where('user_id', Auth::id())
-            ->with('items')
+            ->with('items', 'user.customerProfile')
             ->latest()
             ->get();
     }
@@ -95,18 +93,26 @@ class OrderService
             throw new ModelNotFoundException("User not authenticated.");
         }
 
-        $order = Order::where('user_id', Auth::id()) // Akses langsung model Order
-            ->with('items.product')
+        $order = Order::where('user_id', Auth::id())
+            ->with('items.product', 'user.customerProfile')
             ->findOrFail($orderId);
 
         $productIds = $order->items->pluck('product_id');
 
-        // Ambil review yang sudah ada [product_id => review_id]
         $existingReviews = Review::where('user_id', Auth::id())
             ->whereIn('product_id', $productIds)
             ->pluck('id', 'product_id');
 
+        $profile = $order->user->customerProfile;
+
+        $custProfile = [
+            'name' => $order->user->name ?? 'N/A',
+            'phone' => $profile->phone ?? 'N/A',
+            'address' => $profile->address ?? 'Alamat belum diatur',
+        ];
+
         return [
+            'customerProfile' => $custProfile,
             'order' => $order,
             'existingReviews' => $existingReviews,
         ];

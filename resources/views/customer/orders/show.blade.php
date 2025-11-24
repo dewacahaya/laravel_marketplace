@@ -2,8 +2,6 @@
 
 @section('cust_content')
     <div class="container mx-auto px-4 py-8 md:py-12">
-
-        {{-- Notifikasi Sukses/Error --}}
         @if (session('success'))
             <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4" role="alert">
                 <span class="block sm:inline">{{ session('success') }}</span>
@@ -23,7 +21,6 @@
             </a>
         </div>
 
-        {{-- Header dan Status Pesanan --}}
         <div class="bg-white shadow-xl rounded-lg p-6 mb-8 border-t-4 border-indigo-600">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
 
@@ -178,9 +175,9 @@
                 {{-- Detail Pengiriman --}}
                 <div class="bg-white shadow-xl rounded-lg p-6">
                     <h3 class="text-xl font-semibold text-gray-800 mb-3 border-b pb-2">Shipping Address</h3>
-                    <p class="font-medium text-gray-900">Ordered By: {{ $order->name ?? 'N/A' }}</p>
-                    <p class="text-gray-700">Address: {{ $order->address ?? 'N/A' }}</p>
-                    <p class="text-gray-700 mt-2">Phone: {{ $order->phone ?? 'N/A' }}</p>
+                    <p class="font-medium text-gray-900">Ordered By: {{ $customerProfile['name'] }}</p>
+                    <p class="text-gray-700">Address: {{ $customerProfile['address'] }}</p>
+                    <p class="text-gray-700 mt-2">Phone: {{ $customerProfile['phone'] }}</p>
                 </div>
 
                 {{-- Rincian Pembayaran --}}
