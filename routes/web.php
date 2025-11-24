@@ -21,10 +21,8 @@ use App\Http\Controllers\Customer\ProductController as CustProductController;
 use App\Http\Controllers\Customer\OrderController as CustomerOrderController;
 use App\Models\Category;
 
-// Halaman utama
 Route::get('/', fn() => view('welcome'))->name('welcome');
 
-// Redirect setelah login sesuai role
 Route::middleware(['auth', 'verified'])->get('/dashboard', function () {
     $role = auth()->user()->role;
 
