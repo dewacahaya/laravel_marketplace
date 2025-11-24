@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Services\Admin\OrderService;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class OrderController extends Controller
 {
@@ -26,22 +28,6 @@ class OrderController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
      * Display the specified resource.
      */
     public function show(string $id)
@@ -50,27 +36,26 @@ class OrderController extends Controller
         return view('admin.orders.show', compact('order'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    public function updateStatus(Request $request, int $orderId): RedirectResponse
     {
-        //
-    }
+        // 1. Validasi Status (Harus sesuai ENUM)
+        $validated = $request->validate([
+            'status' => 'required|string|in:pending,paid,shipped,completed,cancelled',
+        ]);
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
+        $newStatus = $validated['status'];
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        try {
+            $success = $this->service->updateOrderStatus($orderId, $newStatus);
+
+            if ($success) {
+                return back()->with('success', "Status pesanan #{$orderId} berhasil diperbarui menjadi '{$newStatus}'.");
+            } else {
+                return back()->with('error', 'Status pesanan tidak berubah atau tidak valid.');
+            }
+        } catch (\Exception $e) {
+            Log::error("Admin update order status failed: " . $e->getMessage());
+            return back()->with('error', 'Gagal memperbarui status: Terjadi kesalahan server.');
+        }
     }
 }

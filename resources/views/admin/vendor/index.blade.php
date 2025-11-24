@@ -74,11 +74,6 @@
 
                                 <td class="px-6 py-4">
                                     <div class="flex space-x-2">
-                                        {{-- <a href="{{ route('admin.vendors.edit', $vendor->id) }}"
-                                            class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded">
-                                            Edit
-                                        </a> --}}
-
                                         <form action="{{ route('admin.vendors.destroy', $vendor->id) }}" method="POST"
                                             onsubmit="return confirm('Are you sure?');">
                                             @csrf

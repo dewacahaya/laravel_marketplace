@@ -58,6 +58,7 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('categories', CategoryController::class)->except(['show']);
         Route::resource('products', ProductController::class)->except(['create', 'store']);
         Route::resource('vendors', VendorController::class);
+        Route::patch('orders/{orderId}/status', [OrderController::class, 'updateStatus'])->name('orders.updateStatus');
         Route::resource('orders', OrderController::class)->only(['index', 'show']);
     });
 

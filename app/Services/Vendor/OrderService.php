@@ -93,7 +93,6 @@ class OrderService
 
     public function updateOrderStatus(int $orderId, string $newStatus): bool
     {
-        // Safety check 1: Vendor harus memiliki produk di order ini
         $vendorProductIds = $this->getVendorProductIds();
         if (empty($vendorProductIds)) {
             return false;
@@ -104,7 +103,6 @@ class OrderService
             return false;
         }
 
-        // Safety check 2: Pastikan Vendor memiliki item di order ini
         $hasRelevantItems = OrderItem::where('order_id', $orderId)
             ->whereIn('product_id', $vendorProductIds)
             ->exists();
@@ -112,22 +110,18 @@ class OrderService
             return false;
         }
 
-        // Validasi status (sesuai ENUM tabel orders)
         $validStatuses = ['pending', 'paid', 'shipped', 'completed', 'cancelled'];
         if (!in_array($newStatus, $validStatuses)) {
             Log::warning("Vendor tried to set invalid status: {$newStatus} for Order #{$orderId}");
             return false;
         }
 
-        // Logika Update: Ubah status jika berbeda
         if ($order->status !== $newStatus) {
             $order->status = $newStatus;
 
-            // Catatan: Pastikan kolom 'status' di model Order di-set sebagai $fillable
             return $order->save();
         }
 
-        // Jika status sudah sama, anggap berhasil (tidak perlu update)
         return true;
     }
 }

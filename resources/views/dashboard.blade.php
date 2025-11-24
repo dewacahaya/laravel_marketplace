@@ -22,7 +22,7 @@
                         class="block py-2 px-3 rounded dark:text-white hover:bg-indigo-100 dark:hover:bg-indigo-800 {{ request()->routeIs('admin.products.*') ? 'bg-indigo-900 font-semibold' : '' }}">🛒
                         Products</a>
                     <a href="{{ route('admin.orders.index') }}"
-                        class="block py-2 px-3 rounded dark:text-white hover:bg-indigo-100 dark:hover:bg-indigo-800">📦
+                        class="block py-2 px-3 rounded dark:text-white hover:bg-indigo-100 dark:hover:bg-indigo-800 {{ request()->routeIs('admin.orders.*') ? 'bg-indigo-900 font-semibold' : '' }}">📦
                         Orders</a>
                     <a href="{{ route('admin.vendors.index') }}"
                         class="block py-2 px-3 rounded dark:text-white hover:bg-indigo-100 dark:hover:bg-indigo-800 {{ request()->routeIs('admin.vendors.*') ? 'bg-indigo-900 font-semibold' : '' }}">👥

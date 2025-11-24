@@ -25,13 +25,13 @@
                 <div>
                     <p>
                         <strong>Status:</strong>
-                        <span class="px-2 py-1 rounded text-xs
+                        <span
+                            class="px-2 py-1 rounded text-xs
                             @if ($order->status === 'pending') bg-yellow-100 text-yellow-700
                             @elseif ($order->status === 'paid') bg-green-100 text-green-700
                             @elseif ($order->status === 'shipped') bg-blue-100 text-blue-700
                             @elseif ($order->status === 'completed') bg-green-200 text-green-800
-                            @elseif ($order->status === 'cancelled') bg-red-100 text-red-700
-                            @endif
+                            @elseif ($order->status === 'cancelled') bg-red-100 text-red-700 @endif
                         ">
                             {{ ucfirst($order->status) }}
                         </span>
@@ -41,6 +41,27 @@
                         <strong>Order Date:</strong>
                         {{ $order->created_at->format('d M Y, H:i') }}
                     </p>
+                    <form action="{{ route('admin.orders.updateStatus', $order->id) }}" method="POST">
+                        @csrf
+                        @method('PATCH')
+
+                        {{-- Kita kirim status yang dipilih --}}
+                        <select name="status" onchange="this.form.submit()"
+                            class="px-2 py-1 border rounded text-xs font-semibold focus:ring-purple-500 focus:border-purple-500 dark:text-gray-900">
+
+                            {{-- Opsi Status (Menggunakan $order->status untuk selected) --}}
+                            <option value="pending" {{ $order->status == 'pending' ? 'selected' : '' }}>Pending
+                            </option>
+                            <option value="paid" {{ $order->status == 'paid' ? 'selected' : '' }}>Paid
+                            </option>
+                            <option value="shipped" {{ $order->status == 'shipped' ? 'selected' : '' }}>Shipped
+                            </option>
+                            <option value="completed" {{ $order->status == 'completed' ? 'selected' : '' }}>
+                                Completed</option>
+                            <option value="cancelled" {{ $order->status == 'cancelled' ? 'selected' : '' }}>
+                                Cancelled</option>
+                        </select>
+                    </form>
                 </div>
 
             </div>
@@ -99,7 +120,6 @@
             @endif
         </div>
 
-        {{-- Total Price --}}
         <div class="mt-6 text-right">
             <h3 class="text-xl font-semibold">
                 Total:
